@@ -1,6 +1,4 @@
-
 const { User } = require('../../../models');
-
 /**
  * Get a list of users
  * @returns {Promise}
@@ -8,7 +6,6 @@ const { User } = require('../../../models');
 async function getUsers() {
   return User.find({});
 }
-
 /**
  * Get user detail
  * @param {string} id - User ID
@@ -17,7 +14,6 @@ async function getUsers() {
 async function getUser(id) {
   return User.findById(id);
 }
-
 /**
  * Create new user
  * @param {string} name - Name
@@ -44,16 +40,6 @@ async function checkEmail(email) {
 }
 
 /**
- * Update user's password
- * @param {string} id - User ID
- * @param {string} newPassword - Hashed new password
- * @returns {Promise}
- */
-async function updatePassword(id, newPassword) {
-  return User.findByIdAndUpdate(id, { password: newPassword });
-}
-
-/**
  * Update existing user
  * @param {string} id - User ID
  * @param {string} name - Name
@@ -73,7 +59,6 @@ async function updateUser(id, name, email) {
     }
   );
 }
-
 /**
  * Delete a user
  * @param {string} id - User ID
@@ -82,7 +67,6 @@ async function updateUser(id, name, email) {
 async function deleteUser(id) {
   return User.deleteOne({ _id: id });
 }
-
 module.exports = {
   getUsers,
   getUser,
@@ -90,5 +74,4 @@ module.exports = {
   updateUser,
   deleteUser,
   checkEmail,
-  updatePassword,
 };

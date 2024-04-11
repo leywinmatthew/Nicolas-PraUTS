@@ -8,7 +8,6 @@ const { email } = require('../../../models/users-schema');
  */
 async function getUsers() {
   const users = await usersRepository.getUsers();
-
   const results = [];
   for (let i = 0; i < users.length; i += 1) {
     const user = users[i];
@@ -18,10 +17,8 @@ async function getUsers() {
       email: user.email,
     });
   }
-
   return results;
 }
-
 /**
  * Get user detail
  * @param {string} id - User ID
@@ -29,12 +26,10 @@ async function getUsers() {
  */
 async function getUser(id) {
   const user = await usersRepository.getUser(id);
-
   // User not found
   if (!user) {
     return null;
   }
-
   return {
     id: user.id,
     name: user.name,
@@ -62,16 +57,13 @@ async function checkEmailTaken(email) {
 async function createUser(name, email, password) {
   // Hash password
   const hashedPassword = await hashPassword(password);
-
   try {
     await usersRepository.createUser(name, email, hashedPassword);
   } catch (err) {
     return null;
   }
-
   return true;
 }
-
 /**
  * Update existing user
  * @param {string} id - User ID
@@ -81,53 +73,25 @@ async function createUser(name, email, password) {
  */
 async function updateUser(id, name, email) {
   const user = await usersRepository.getUser(id);
-
   // User not found
   if (!user) {
     return null;
   }
-
   try {
     await usersRepository.updateUser(id, name, email);
   } catch (err) {
     return null;
   }
-
   return true;
 }
 
 /**
- * Change user's password
+ * Update existing user
  * @param {string} id - User ID
- * @param {string} oldPassword - Old password
- * @param {string} newPassword - New password
+ * @param {string} password - Password
+ * @param {string} email - Email
  * @returns {boolean}
  */
-async function changePassword(id, oldPassword, newPassword) {
-  const user = await usersRepository.getUser(id);
-
-  // User not found
-  if (!user) {
-    return null;
-  }
-
-  // Check if old password matches
-  const isMatch = await comparePasswords(oldPassword, user.password);
-  if (!isMatch) {
-    return false; // Old password does not match
-  }
-
-  // Hash new password
-  const hashedNewPassword = await hashPassword(newPassword);
-
-  try {
-    await usersRepository.updatePassword(id, hashedNewPassword);
-  } catch (err) {
-    return null;
-  }
-
-  return true;
-}
 
 /**
  * Delete user
@@ -136,33 +100,17 @@ async function changePassword(id, oldPassword, newPassword) {
  */
 async function deleteUser(id) {
   const user = await usersRepository.getUser(id);
-
   // User not found
   if (!user) {
     return null;
   }
-
   try {
     await usersRepository.deleteUser(id);
   } catch (err) {
     return null;
   }
-
   return true;
 }
-
-const bcrypt = require('bcrypt');
-
-/**
- * Compare passwords
- * @param {string} password - Password to compare
- * @param {string} hashedPassword - Hashed password to compare against
- * @returns {boolean} - Returns true if passwords match, false otherwise
- */
-async function comparePasswords(password, hashedPassword) {
-  return await bcrypt.compare(password, hashedPassword);
-}
-
 module.exports = {
   getUsers,
   getUser,
@@ -170,6 +118,4 @@ module.exports = {
   updateUser,
   deleteUser,
   checkEmailTaken,
-  changePassword,
-  comparePasswords,
-};
+}
