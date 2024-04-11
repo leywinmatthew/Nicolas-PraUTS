@@ -1,7 +1,6 @@
 const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
 const { password } = require('../../../models/users-schema');
-
 /**
  * Handle get list of users request
  * @param {object} request - Express request object
@@ -48,6 +47,14 @@ async function createUser(request, response, next) {
     const email = request.body.email;
     const password = request.body.password;
 
+    const confirmPassword = request.body.confirmPassword;
+    if (password !== confirmPassword) {
+      throw errorResponder(
+        errorTypes.INVALID_PASSWORD,
+        'Password does not match'
+      );
+    }
+
     const emailTaken = await usersService.checkEmailTaken(email);
     if (emailTaken) {
       throw errorResponder(
@@ -55,7 +62,6 @@ async function createUser(request, response, next) {
         'Email already exist'
       );
     }
-
     const success = await usersService.createUser(name, email, password);
     if (!success) {
       throw errorResponder(
@@ -80,7 +86,6 @@ async function updateUser(request, response, next) {
     const id = request.params.id;
     const name = request.body.name;
     const email = request.body.email;
-
     const emailTaken = await usersService.checkEmailTaken(email);
     if (emailTaken) {
       throw errorResponder(
@@ -88,7 +93,6 @@ async function updateUser(request, response, next) {
         'Email already exist'
       );
     }
-
     const success = await usersService.updateUser(id, name, email);
     if (!success) {
       throw errorResponder(
@@ -101,7 +105,6 @@ async function updateUser(request, response, next) {
     return next(error);
   }
 }
-
 /**
  * Handle update password request
  * @param {object} request - Express request object
@@ -109,7 +112,6 @@ async function updateUser(request, response, next) {
  * @param {object} next - Express route middlewares
  * @returns {object} Response object or pass an error to the next route
  */
-
 /**
  * Handle delete user request
  * @param {object} request - Express request object
